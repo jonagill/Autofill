@@ -342,8 +342,7 @@ namespace Autofill.Editor
             return false;
         }
 
-        [MenuItem("Autofill/Update Current Selection")]
-        [MenuItem("GameObject/Autofill/Update Current Selection", false, 1)]
+        [MenuItem("Assets/Autofill/Update Current Selection", false, 1)]
         private static void UpdateCurrentSelection()
         {
             foreach (var gameObject in Selection.gameObjects)
@@ -361,8 +360,15 @@ namespace Autofill.Editor
                 }
             }
         }
+        
+        [MenuItem("Assets/Autofill/Update Current Selection", true)]
+        private static bool ValidateUpdateCurrentSelection()
+        {
+            return Selection.gameObjects != null && Selection.gameObjects.Length > 0;
+        }
 
-        [MenuItem("Autofill/Update All Prefabs")]
+
+        [MenuItem("Assets/Autofill/Update All Prefabs")]
         public static void UpdateAllPrefabs()
         {
             if (EditorUtility.DisplayDialog(
@@ -448,7 +454,7 @@ namespace Autofill.Editor
             return fieldInfo;
         }
 
-        public static List<PropertyAttribute> GetFieldAttributesInternal(FieldInfo fieldInfo)
+        private static List<PropertyAttribute> GetFieldAttributesInternal(FieldInfo fieldInfo)
         {
             return (List<PropertyAttribute>) getFieldAttributesMethod.Invoke(null, new object[] {fieldInfo});
         }
