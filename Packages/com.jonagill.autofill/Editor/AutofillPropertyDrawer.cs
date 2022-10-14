@@ -10,12 +10,19 @@ namespace Autofill
         private AutofillUpdateResult result = AutofillUpdateResult.Unchanged;
 
         private float HelpBoxHeight => EditorGUIUtility.singleLineHeight + 15f;
+        private const float HelpBoxSpacing = 3f;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
+            var autofillAttribute = attribute as AutofillAttribute;
+            
             if (result.IsError())
             {
-                return EditorGUI.GetPropertyHeight(property, label) + HelpBoxHeight;
+                return EditorGUI.GetPropertyHeight(property, label) + HelpBoxHeight + HelpBoxSpacing;
+            }
+            else if (autofillAttribute.AlwaysShowInInspector)
+            {
+                return EditorGUI.GetPropertyHeight(property, label);
             }
 
             return 0f;
@@ -25,7 +32,10 @@ namespace Autofill
         {
             result = AutofillUpdateResult.Unchanged;
             var autofillAttribute = attribute as AutofillAttribute;
-
+            
+            var inspectorDrawn = false;
+            
+            // Don't update autofilled fields when the game is playing
             if (!Application.isPlaying)
             {
                 var fieldType = fieldInfo.FieldType;
@@ -39,12 +49,22 @@ namespace Autofill
                     position.height = HelpBoxHeight;
                     EditorGUI.HelpBox(
                         position,
-                        string.Format("Autofill failed: {0}", result.ToErrorString()),
+                        string.Format("Autofill failed: {0}", result.ToErrorString(fieldType)),
                         MessageType.Warning);
-                    position.y += HelpBoxHeight;
+                    position.y += HelpBoxHeight + HelpBoxSpacing;
 
                     // Only render the field if there was an error to display.
                     // Otherwise, hide this field entirely to avoid cluttering the inspector
+                    position.height = EditorGUI.GetPropertyHeight(property, label);
+                    EditorGUI.PropertyField(position, property, label, true);
+                    inspectorDrawn = true;
+                }
+            }
+            
+            if (!inspectorDrawn && autofillAttribute.AlwaysShowInInspector)
+            {
+                using (new EditorGUI.DisabledGroupScope(true))
+                {
                     position.height = EditorGUI.GetPropertyHeight(property, label);
                     EditorGUI.PropertyField(position, property, label, true);
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Autofill
 {
@@ -21,7 +22,7 @@ namespace Autofill
             return result < 0;
         }
         
-        public static string ToErrorString(this AutofillUpdateResult result)
+        public static string ToErrorString(this AutofillUpdateResult result, Type fieldType)
         {
             switch (result)
             {
@@ -29,9 +30,9 @@ namespace Autofill
                 case AutofillUpdateResult.Updated:
                     return string.Empty;
                 case AutofillUpdateResult.Error_MultipleComponentsFound:
-                    return "Multiple valid components found. Set this field manually.";
+                    return "Multiple valid components found.";
                 case AutofillUpdateResult.Error_NoValidComponentFound:
-                    return "No valid component found.";
+                    return $"No valid {fieldType.Name} component found.";
                 case AutofillUpdateResult.Error_InvalidType:
                     return "Only component types can be autofilled.";
                 case AutofillUpdateResult.Error_PropertyIsArray:

@@ -132,7 +132,6 @@ namespace Autofill.Editor
                                             if (result.IsError())
                                             {
                                                 var errorKey = GenerateErrorText(
-                                                    gameObject,
                                                     serializedProperty,
                                                     fieldInfo,
                                                     result,
@@ -141,16 +140,13 @@ namespace Autofill.Editor
                                                 if (!IgnoredErrors.Contains(errorKey))
                                                 {
                                                     var readableError = GenerateErrorText(
-                                                        gameObject,
                                                         serializedProperty,
                                                         fieldInfo,
                                                         result,
                                                         useRawResult: false);
 
                                                     var displayError = $"Error updating autofill: {readableError}";
-
-                                                    Debug.LogError(displayError, serializedObject.targetObject);
-
+                                                    
                                                     if (!SuppressDialogs)
                                                     {
                                                         if (!EditorUtility.DisplayDialog(
@@ -162,6 +158,10 @@ namespace Autofill.Editor
                                                         {
                                                             IgnoreError(errorKey);
                                                         }
+                                                    }
+                                                    else
+                                                    {
+                                                        Debug.LogError(displayError, serializedObject.targetObject);
                                                     }
                                                 }
                                             }
@@ -281,7 +281,6 @@ namespace Autofill.Editor
         }
 
         private static string GenerateErrorText(
-            GameObject targetObject,
             SerializedProperty property,
             FieldInfo fieldInfo,
             AutofillUpdateResult result,
@@ -303,7 +302,8 @@ namespace Autofill.Editor
                 }
             }
 
-            CollectHierarchyPathRecursive(targetObject.transform, true);
+            var serializedComponent = (Component) property.serializedObject.targetObject;
+            CollectHierarchyPathRecursive(serializedComponent.gameObject.transform, true);
             sb.Append($" ({fieldInfo.DeclaringType.ToString().Split('.').LastOrDefault()}.{property.name})");
             if (useRawResult)
             {
@@ -311,7 +311,7 @@ namespace Autofill.Editor
             }
             else
             {
-                sb.Append($" {result.ToErrorString()}");
+                sb.Append($" {result.ToErrorString(fieldInfo.FieldType)}");
             }
 
             return sb.ToString();
