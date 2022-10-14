@@ -1,0 +1,17 @@
+{
+    "name": "Autofill.Editor",
+    "references": [
+        "GUID:2fd733897efe1e848917e18e38fa5cdf"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
