@@ -355,8 +355,8 @@ namespace Autofill.Editor
                         target = gameObject;
                     }
 
-                    Debug.LogFormat(target, "Updating autofilled properties for {0}", target);
                     UpdateAndSavePrefab(target);
+                    Debug.LogFormat(target, "Updated autofilled properties for {0}", target);
                 }
             }
         }
