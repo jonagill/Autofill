@@ -9,6 +9,20 @@ into this:
 
 ![A Unity component inspector with no serialized properties](img/AutofilledFields.png)
 
+## Installation
+We recommend you install Autofill via [OpenUPM](https://openupm.com/packages/com.jonagill.autofill/). Per OpenUPM's documentation:
+
+1. Open `Edit/Project Settings/Package Manager`
+2. Add a new Scoped Registry (or edit the existing OpenUPM entry) to read:
+    * Name: `package.openupm.com`
+    * URL: `https://package.openupm.com`
+    * Scope(s): `com.jonagill.autofill`
+3. Click Save (or Apply)
+4. Open Window/Package Manager
+5. Click the + button
+6. Select Add package by name...
+6. Click Add
+
 ## Using Autofill
 To enable Autofill for a serialized field on a given component, you must mark it up with the `[Autofill]` or `[AutofillOptional]` attributes.
 
