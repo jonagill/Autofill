@@ -61,7 +61,7 @@ The `type` parameter specifies where the Autofill system will search to try and 
 
 
 #### acceptFirstValidResult
-The Autofill system usually displays an error if it finds multiple valid target components when trying to fill a reference. If this parameter is set to true, the Autofill system will accept the first result is finds (usually the closest component to the declaring component in the hierarchy).
+The Autofill system usually displays an error if it finds multiple valid target components when trying to fill a reference. If this parameter is set to true, the Autofill system will accept the first result it finds (usually the closest component to the declaring component in the hierarchy).
 
 #### alwaysShowInInspector
 The Autofill will usually hide autofilled references that have been successfully filled in the Inspector. If this parameter is set to true, the Autofill system will draw a disabled version of this field instead of hiding it entirely.
