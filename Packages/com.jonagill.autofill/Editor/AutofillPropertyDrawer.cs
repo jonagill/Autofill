@@ -2,6 +2,11 @@
 using UnityEngine;
 using UnityEditor;
 
+#if UNITY_2022_1_OR_NEWER
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+#endif
+
 namespace Autofill
 {
     [CustomPropertyDrawer(typeof(AutofillAttribute), true)]
@@ -27,6 +32,53 @@ namespace Autofill
 
             return 0f;
         }
+
+#if UNITY_2022_1_OR_NEWER
+        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        {
+            var autofillAttribute = attribute as AutofillAttribute;
+            var holder = new VisualElement();
+
+            var helpBox = new HelpBox(string.Empty, HelpBoxMessageType.Warning);
+            holder.Add(helpBox);
+            
+            var propertyField = new PropertyField(property);
+            propertyField.SetEnabled(false);
+            holder.Add(propertyField);
+
+            void UpdateFields()
+            {
+                result = AutofillUpdateResult.Unchanged;
+                string errorText = null;
+
+                // Don't update autofilled fields when the game is playing
+                if (!Application.isPlaying)
+                {
+                    var fieldType = fieldInfo.FieldType;
+                    if (autofillAttribute != null)
+                    {
+                        result = AutofillEditorUpdater.UpdateProperty(property, fieldType, autofillAttribute);
+                        if (result.IsError())
+                        {
+                            errorText = string.Format("Autofill failed: {0}", result.ToErrorString(fieldType));
+                        }
+                    }
+                }
+                
+                var showError = errorText != null;
+                var showField = showError || autofillAttribute.AlwaysShowInInspector;
+
+                helpBox.text = errorText;
+                helpBox.style.display = showError ? DisplayStyle.Flex : DisplayStyle.None;
+                propertyField.style.display = showField ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            
+            propertyField.TrackSerializedObjectValue(property.serializedObject, obj => UpdateFields());
+            UpdateFields();
+            
+            return holder;
+        }
+#endif
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
