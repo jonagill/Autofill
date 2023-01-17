@@ -1,5 +1,5 @@
 # Autofill
-Autofill is a simple Unity extension that can automatically assign serialized component references for you. If a reference is successfully autofilled, it will be hidden in the Inspector, allowing you to safely ignore it like the implementation detail it is. This provides all the ease of use of calling `GetComponent` with none of the runtime costs!
+Autofill is a simple Unity extension that can automatically assign serialized component references for you at edit time. If a reference is successfully autofilled, it will be hidden in the Inspector, allowing you to safely ignore it like the implementation detail it is. This provides all the ease of use of calling `GetComponent` with none of the runtime costs!
 
 Autofill turns messy Inspectors like this:
 
