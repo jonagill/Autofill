@@ -342,7 +342,7 @@ namespace Autofill.Editor
             return false;
         }
 
-        [MenuItem("Assets/Autofill/Update Current Selection", false, 1)]
+        [MenuItem("Assets/Autofill/Update Current Selection", false, 500)]
         private static void UpdateCurrentSelection()
         {
             foreach (var gameObject in Selection.gameObjects)
@@ -368,7 +368,7 @@ namespace Autofill.Editor
         }
 
 
-        [MenuItem("Assets/Autofill/Update All Prefabs")]
+        [MenuItem("Assets/Autofill/Update All Prefabs", false, 501)]
         public static void UpdateAllPrefabs()
         {
             if (EditorUtility.DisplayDialog(
