@@ -28,6 +28,8 @@ namespace Autofill.Editor
             }
         }
 
+        private const string DIALOGS_MUTED_KEY = "Autofill_DialogsMuted";
+
         private static readonly MethodInfo getFieldInfoFromPropertyMethod;
         private static readonly MethodInfo getFieldAttributesMethod;
 
@@ -146,17 +148,24 @@ namespace Autofill.Editor
                                                         useRawResult: false);
 
                                                     var displayError = $"Error updating autofill: {readableError}";
-                                                    
-                                                    if (!SuppressDialogs)
+
+                                                    if (!SuppressDialogs && !SessionState.GetBool(DIALOGS_MUTED_KEY, false))
                                                     {
-                                                        if (!EditorUtility.DisplayDialog(
+                                                        var response = EditorUtility.DisplayDialogComplex(
                                                             "Error updating autofilled fields",
                                                             $"{displayError}\n\n",
                                                             "Okay",
-                                                            "Don't warn me again"
-                                                        ))
+                                                            "Don't warn again for this prefab",
+                                                            "Disable all warnings until restart" );
+
+                                                        switch (response)
                                                         {
-                                                            IgnoreError(errorKey);
+                                                            case 1:
+                                                                IgnoreError(errorKey);
+                                                                break;
+                                                            case 2:
+                                                                SessionState.SetBool(DIALOGS_MUTED_KEY, true);
+                                                                break;
                                                         }
                                                     }
                                                     else
