@@ -386,23 +386,26 @@ namespace Autofill.Editor
                 "Okay",
                 "Cancel"))
             {
-                var prefabPaths = AssetDatabase.FindAssets("t:prefab");
+                var prefabGuids = AssetDatabase.FindAssets("t:prefab");
                 try
                 {
-                    for (var i = 0; i < prefabPaths.Length; i++)
+                    for (var i = 0; i < prefabGuids.Length; i++)
                     {
-                        // Only update the progress bar occasionally as it can slow down bulk updates significantly
+                        var path = AssetDatabase.GUIDToAssetPath(prefabGuids[i]);
+                        
+;                        // Only update the progress bar occasionally as it can slow down bulk updates significantly
                         if (i % 50 == 0)
                         {
                             if (EditorUtility.DisplayCancelableProgressBar(
-                                $"Updating prefabs {i}/{prefabPaths.Length}",
-                                prefabPaths[i],
-                                i / (float) prefabPaths.Length))
+                                $"Updating prefabs {i}/{prefabGuids.Length}",
+                                path,
+                                i / (float) prefabGuids.Length))
                             {
                                 break;
                             }
 
-                            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPaths[i]);
+                            
+                            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
                             if (prefab != null)
                             {
                                 UpdateAndSavePrefab(prefab);
