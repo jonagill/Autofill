@@ -393,7 +393,7 @@ namespace Autofill.Editor
                     {
                         var path = AssetDatabase.GUIDToAssetPath(prefabGuids[i]);
                         
-;                        // Only update the progress bar occasionally as it can slow down bulk updates significantly
+                        // Only update the progress bar occasionally as it can slow down bulk updates significantly
                         if (i % 50 == 0)
                         {
                             if (EditorUtility.DisplayCancelableProgressBar(
@@ -403,13 +403,12 @@ namespace Autofill.Editor
                             {
                                 break;
                             }
-
-                            
-                            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                            if (prefab != null)
-                            {
-                                UpdateAndSavePrefab(prefab);
-                            }
+                        }
+                        
+                        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                        if (prefab != null)
+                        {
+                            UpdateAndSavePrefab(prefab);
                         }
                     }
                 }
