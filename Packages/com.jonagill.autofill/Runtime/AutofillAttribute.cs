@@ -21,15 +21,18 @@ namespace Autofill
 
 		public readonly bool AcceptFirstValidResult;
 		public readonly bool AlwaysShowInInspector;
+		public readonly bool AllowManualAssignment;
 
 		public AutofillAttribute(
 			AutofillType type = AutofillType.Self, 
 			bool acceptFirstValidResult = false,
-			bool alwaysShowInInspector = false)
+			bool alwaysShowInInspector = false,
+			bool allowManualAssignment = false)
 		{
 			Type = type;
 			AcceptFirstValidResult = acceptFirstValidResult;
 			AlwaysShowInInspector = alwaysShowInInspector;
+			AllowManualAssignment = allowManualAssignment;
 		}
 	}
 }

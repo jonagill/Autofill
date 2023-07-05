@@ -15,7 +15,8 @@
         public AutofillOptionalAttribute(
             AutofillType type = AutofillType.Self,
             bool acceptFirstValidResult = false,
-            bool alwaysShowInInspector = false) : base(type, acceptFirstValidResult, alwaysShowInInspector)
+            bool alwaysShowInInspector = false,
+            bool allowManualAssignment = false) : base(type, acceptFirstValidResult, alwaysShowInInspector, allowManualAssignment)
         {
         }
 

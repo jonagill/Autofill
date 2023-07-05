@@ -66,11 +66,18 @@ namespace Autofill
                 }
                 
                 var showError = errorText != null;
-                var showField = showError || autofillAttribute.AlwaysShowInInspector;
+
+                var isNull = property.objectReferenceValue == null;
+                var isManualOverride = AutofillEditorUpdater.PropertyHasManualOverride(property, autofillAttribute);
+                
+                var showField = showError || 
+                                autofillAttribute.AlwaysShowInInspector ||
+                                (autofillAttribute.AllowManualAssignment && (isNull || isManualOverride));
 
                 helpBox.text = errorText;
                 helpBox.style.display = showError ? DisplayStyle.Flex : DisplayStyle.None;
                 propertyField.style.display = showField ? DisplayStyle.Flex : DisplayStyle.None;
+                propertyField.SetEnabled(autofillAttribute.AllowManualAssignment);
             }
             
             propertyField.TrackSerializedObjectValue(property.serializedObject, obj => UpdateFields());

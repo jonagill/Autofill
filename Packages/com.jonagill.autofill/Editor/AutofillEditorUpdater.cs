@@ -220,7 +220,8 @@ namespace Autofill.Editor
                 if (targetGameObject != null && autofillAttribute != null)
                 {
                     Component propertyComponent = property.objectReferenceValue as Component;
-                    if (!VerifyPropertyFilled(targetGameObject, autofillAttribute, propertyComponent) || force)
+
+                    if (ShouldRunUpdate(targetGameObject, propertyComponent, autofillAttribute, force))
                     {
                         // Collect all of the possible components that could fill this field
                         Component[] allPossibleComponents = null;
@@ -289,6 +290,56 @@ namespace Autofill.Editor
             return result;
         }
 
+        internal static bool PropertyHasManualOverride(
+            SerializedProperty property,
+            AutofillAttribute autofillAttribute)
+        {
+            var targetObject = property.serializedObject.targetObject;
+            var targetComponent = targetObject as Component;
+            if (targetComponent != null)
+            {
+                var targetGameObject = targetComponent.gameObject;
+                if (targetGameObject != null && autofillAttribute != null)
+                {
+                    Component propertyComponent = property.objectReferenceValue as Component;
+                    
+                    // We have a value, but it doesn't match our expected location
+                    return propertyComponent != null &&
+                           !VerifyAutofillSatisfied(targetGameObject, autofillAttribute, propertyComponent);
+                }
+            }
+
+            return false;
+        }
+
+        private static bool ShouldRunUpdate(
+            GameObject targetGameObject, 
+            Component propertyComponent, 
+            AutofillAttribute autofillAttribute, 
+            bool force)
+        {
+            if (propertyComponent == null)
+            {
+                // We have no value -- try to find one
+                return true;
+            }
+
+            if (autofillAttribute.AllowManualAssignment)
+            {
+                // We have manually assigned a value
+                return false;
+            }
+
+            if (force)
+            {
+                // Update all fields that aren't manually assigned
+                return true;
+            }
+            
+            // Update only if we don't already have a valid target 
+            return !VerifyAutofillSatisfied(targetGameObject, autofillAttribute, propertyComponent);
+        }
+
         private static string GenerateErrorText(
             SerializedProperty property,
             FieldInfo fieldInfo,
@@ -326,15 +377,17 @@ namespace Autofill.Editor
             return sb.ToString();
         }
 
-        private static bool VerifyPropertyFilled(GameObject targetGameObject, AutofillAttribute autofillAttribute,
-            Component propertyComponent)
+        private static bool VerifyAutofillSatisfied(
+            GameObject targetGameObject, 
+            AutofillAttribute autofillAttribute,
+            Component propertyValue)
         {
-            if (propertyComponent == null)
+            if (propertyValue == null)
             {
                 return false;
             }
 
-            if (autofillAttribute.IncludesSelf && propertyComponent.gameObject == targetGameObject)
+            if (autofillAttribute.IncludesSelf && propertyValue.gameObject == targetGameObject)
             {
                 return true;
             }
@@ -343,9 +396,9 @@ namespace Autofill.Editor
             {
                 case AutofillType.Parent:
                 case AutofillType.SelfAndParent:
-                    return targetGameObject.transform.IsChildOf(propertyComponent.transform);
+                    return targetGameObject.transform.IsChildOf(propertyValue.transform);
                 case AutofillType.SelfAndChildren:
-                    return propertyComponent.transform.IsChildOf(targetGameObject.transform);
+                    return propertyValue.transform.IsChildOf(targetGameObject.transform);
             }
 
             return false;
