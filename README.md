@@ -66,5 +66,18 @@ The Autofill system usually displays an error if it finds multiple valid target 
 #### alwaysShowInInspector
 The Autofill will usually hide autofilled references that have been successfully filled in the Inspector. If this parameter is set to true, the Autofill system will draw a disabled version of this field instead of hiding it entirely.
 
+### Missing reference resolution
+Whenever you save or import a prefab containing an `[Autofill]` reference that could not be resolved, an error dialog will display:
+
+![A Unity popup dialog alerting that the Autofill system was unable to find a Collider component on a prefab](img/AutofillErrorDialog.png)
+
+This dialog gives you three options:
+
+* **Okay:** Simply dismisses the dialog, allowing you to go and fix this single issue.
+* **Disable all warnings until restart:** Dismisses the dialog and prevents additional dialogs from appearing until you restart Unity. Can be useful if you are bulk-importing a lot of assets with errors and receiving a lot of dialogs at the same time.
+* **Don't warn again for this prefab:** Marks this error as expected and prevents additional dialogs for opening for this exact property on this exact prefab. This is tracked by adding a line to a `AutofillIgnoredErrors.txt` file in your `ProjectSettings` folder. This file can be committed into version control, which makes this option helpful for e.g. marking a missing Autofill reference as expected on a base prefab that will usually be dropped into a context where the reference can be resolved.
+
+Of course, if you expect that this reference will be missing on a lot of assets, can also use `[AutofillOptional]` to mark the missing reference as intentional, which will suppress the error dialog entirely.
+
 ## Limitations
 * Autofill is not currently supported on serialized arrays or lists.
