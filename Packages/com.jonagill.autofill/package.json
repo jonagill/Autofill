@@ -1,7 +1,10 @@
 {
   "name": "com.jonagill.autofill",
   "description": "A utility to automatically retrieve serializable component references on prefabs at edit time.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "unity": "2019.2",
-  "displayName": "Autofill"
+  "displayName": "Autofill",
+  "dependencies": {
+    "com.unity.settings-manager": "2.0.1"
+  }
 }

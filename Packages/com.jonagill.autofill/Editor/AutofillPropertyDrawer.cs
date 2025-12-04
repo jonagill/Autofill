@@ -25,7 +25,7 @@ namespace Autofill
             {
                 return EditorGUI.GetPropertyHeight(property, label) + HelpBoxHeight + HelpBoxSpacing;
             }
-            else if (autofillAttribute.AlwaysShowInInspector)
+            else if (autofillAttribute.AlwaysShowInInspector || AutofillEditorSettings.DisplayAllFieldsInInspector)
             {
                 return EditorGUI.GetPropertyHeight(property, label);
             }
@@ -72,7 +72,8 @@ namespace Autofill
                 
                 var showField = showError || 
                                 autofillAttribute.AlwaysShowInInspector ||
-                                (autofillAttribute.AllowManualAssignment && (isNull || isManualOverride));
+                                (autofillAttribute.AllowManualAssignment && (isNull || isManualOverride) || 
+                                AutofillEditorSettings.DisplayAllFieldsInInspector);
 
                 helpBox.text = errorText;
                 helpBox.style.display = showError ? DisplayStyle.Flex : DisplayStyle.None;
@@ -81,6 +82,13 @@ namespace Autofill
             }
             
             propertyField.TrackSerializedObjectValue(property.serializedObject, obj => UpdateFields());
+
+            AutofillEditorSettings.RegisterSettingsChangedCallback(UpdateFields);
+            holder.RegisterCallbackOnce<DetachFromPanelEvent>((_ =>
+            {
+                AutofillEditorSettings.UnregisterSettingsChangedCallback(UpdateFields);
+            }));
+            
             UpdateFields();
             
             return holder;
@@ -120,7 +128,7 @@ namespace Autofill
                 }
             }
             
-            if (!inspectorDrawn && autofillAttribute.AlwaysShowInInspector)
+            if (!inspectorDrawn && (autofillAttribute.AlwaysShowInInspector || AutofillEditorSettings.DisplayAllFieldsInInspector))
             {
                 using (new EditorGUI.DisabledGroupScope(true))
                 {

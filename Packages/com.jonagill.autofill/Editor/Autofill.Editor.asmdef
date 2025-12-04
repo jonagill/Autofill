@@ -1,7 +1,9 @@
 {
     "name": "Autofill.Editor",
+    "rootNamespace": "",
     "references": [
-        "GUID:2fd733897efe1e848917e18e38fa5cdf"
+        "GUID:2fd733897efe1e848917e18e38fa5cdf",
+        "GUID:49818357e697641afb75d2f8acaf1861"
     ],
     "includePlatforms": [
         "Editor"
