@@ -31,7 +31,6 @@ To install Autofill via [OpenUPM](https://openupm.com/packages/com.jonagill.auto
 5. Click the + button
 6. Select Add package by name...
 7. Enter `com.jonagill.autofill` and click Add
-8. Click Add
 
 ## Using Autofill
 To enable Autofill for a serialized field on a given component, you must mark it up with the `[Autofill]` or `[AutofillOptional]` attributes.
