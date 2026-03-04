@@ -10,7 +10,16 @@ into this:
 ![A Unity component inspector with no serialized properties](img/AutofilledFields.png)
 
 ## Installation
-We recommend you install Autofill via [OpenUPM](https://openupm.com/packages/com.jonagill.autofill/). Per OpenUPM's documentation:
+
+### Install via Git
+1. Open Window/Package Manager
+2. Click the + button
+3. Select Add Package From Git URL
+4. Paste `https://github.com/jonagill/Autofill.git?path=Packages/com.jonagill.autofill` into the URL field
+5. Click Install
+
+### Installation via OpenUPM
+To install Autofill via [OpenUPM](https://openupm.com/packages/com.jonagill.autofill/):
 
 1. Open `Edit/Project Settings/Package Manager`
 2. Add a new Scoped Registry (or edit the existing OpenUPM entry) to read:
