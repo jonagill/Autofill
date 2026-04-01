@@ -34,6 +34,7 @@ namespace Autofill.Editor
         private static readonly MethodInfo getFieldInfoFromPropertyMethod;
         private static readonly MethodInfo getFieldAttributesMethod;
 
+        private static readonly Dictionary<Type, bool> cachedAutofillableBehaviourTypes = new();
 
         static AutofillEditorUpdater()
         {
@@ -92,7 +93,7 @@ namespace Autofill.Editor
             {
                 foreach (var behaviour in allBehaviours)
                 {
-                    if (behaviour != null)
+                    if (behaviour != null && IsAutofillableType(behaviour.GetType()))
                     {
                         SerializedObject serializedObject = new SerializedObject(behaviour);
                         var serializedProperty = serializedObject.GetIterator();
@@ -536,6 +537,45 @@ namespace Autofill.Editor
         private static List<PropertyAttribute> GetFieldAttributesInternal(FieldInfo fieldInfo)
         {
             return (List<PropertyAttribute>) getFieldAttributesMethod.Invoke(null, new object[] {fieldInfo});
+        }
+        
+        private static bool IsAutofillableType(Type type)
+        {
+            if (cachedAutofillableBehaviourTypes.TryGetValue(type, out bool cachedValue))
+            {
+                return cachedValue;
+            }
+
+            // Walk up our inheritance chain looking for autofillable fields
+            // We have to walk up because private fields on base types are not exposed to reflection
+            bool isAutofillable = false;
+            var typeIterator = type;
+            while (typeIterator != null && typeIterator != typeof(MonoBehaviour))
+            {
+                var fields = typeIterator.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                foreach (var field in fields)
+                {
+                    // If we have an Autofilled field, we obviously support autofill
+                    if (field.GetCustomAttribute(typeof(AutofillAttribute), inherit: true) != null)
+                    {
+                        isAutofillable = true;
+                        break;
+                    }
+
+                    // If we serialize references, we don't really know what might be contained in this object
+                    // We should attempt to autofill property-by-property just in case
+                    if (field.GetCustomAttribute(typeof(SerializeReference), inherit: true) != null)
+                    {
+                        isAutofillable = true;
+                        break;
+                    }
+                }
+                    
+                typeIterator = typeIterator.BaseType;
+            }
+            
+            cachedAutofillableBehaviourTypes[type] = isAutofillable;
+            return isAutofillable;
         }
     }
 }
