@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Autofill.Editor
 {
@@ -61,6 +62,20 @@ namespace Autofill.Editor
             }
 
             return false;
+        }
+
+        public static bool UpdateScene(Scene scene)
+        {
+            bool updatedAnyObjects = false;
+            if (scene.IsValid() && scene.isLoaded)
+            {
+                foreach (var rootObject in scene.GetRootGameObjects())
+                {
+                    updatedAnyObjects |= UpdateGameObject(rootObject);
+                }
+            }
+
+            return updatedAnyObjects;
         }
 
         public static bool UpdateGameObject(GameObject gameObject)

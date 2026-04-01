@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Autofill.Editor
 {
@@ -15,6 +17,7 @@ namespace Autofill.Editor
         static AutofillPostprocessor()
         {
             AssemblyReloadEvents.beforeAssemblyReload += BeforeAssemblyReload;
+            EditorSceneManager.sceneSaving += HandleSceneSaving;
 
             if (!EditorApplication.isCompiling)
             {
@@ -30,7 +33,7 @@ namespace Autofill.Editor
         {
             foreach (var assetPath in importedAssets)
             {
-                if (assetPath.EndsWith(".prefab"))
+                if (IsPrefabPath(assetPath))
                 {
                     if (EditorApplication.isCompiling)
                     {
@@ -48,6 +51,21 @@ namespace Autofill.Editor
                         }    
                     }
                 }
+            }
+        }
+        
+        private static void HandleSceneSaving(Scene scene, string path)
+        {
+            if (EditorApplication.isCompiling)
+            {
+                if (!assetPathsForDeferredUpdate.Contains(path))
+                {
+                    assetPathsForDeferredUpdate.Add(path);
+                }
+            }
+            else
+            {
+                AutofillEditorUpdater.UpdateScene(scene);
             }
         }
         
@@ -77,16 +95,38 @@ namespace Autofill.Editor
             {
                 if (!string.IsNullOrEmpty(assetPath))
                 {
-                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                    if (prefab != null)
+                    if (IsPrefabPath(assetPath))
                     {
-                        AutofillEditorUpdater.UpdateAndSavePrefab(prefab);
+                        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                        if (prefab != null)
+                        {
+                            AutofillEditorUpdater.UpdateAndSavePrefab(prefab);
+                        }
+                    }
+                    else if (IsScenePath(assetPath))
+                    {
+                        // Process our scene if it's still open
+                        var scene = EditorSceneManager.GetSceneByPath(assetPath);
+                        if (scene.IsValid())
+                        {
+                            AutofillEditorUpdater.UpdateScene(scene);
+                        }
                     }
                 }
             }
             
             // Clear our previous state
             SessionState.EraseString(DEFERRED_PATHS_STATE_KEY);
+        }
+
+        private static bool IsPrefabPath(string path)
+        {
+            return path.EndsWith(".prefab");
+        }
+
+        private static bool IsScenePath(string path)
+        {
+            return path.EndsWith(".unity");
         }
     }
 }
