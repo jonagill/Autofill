@@ -564,7 +564,7 @@ namespace Autofill.Editor
                     continue;
                 }
                 
-                // If we have an Autofilled field, we obviously support autofill
+                // If we have a field with the Autofill attribute, we support autofill
                 if (field.GetCustomAttribute(typeof(AutofillAttribute), inherit: true) != null)
                 {
                     isAutofillable = true;
@@ -572,14 +572,14 @@ namespace Autofill.Editor
                 }
 
                 // If we serialize references, we don't really know what might be contained in this object
-                // We should attempt to autofill property-by-property just in case
+                // We should attempt to autofill just in case
                 if (field.GetCustomAttribute(typeof(SerializeReference), inherit: true) != null)
                 {
                     isAutofillable = true;
                     break;
                 }
                 
-                // If our field is itself a serializable field, check if it contains any autofillable fields itself
+                // If our field is itself a serializable type, check if that type contains any autofillable fields itself
                 Type fieldType = field.FieldType;
                 if (field.FieldType.GetCustomAttribute(typeof(SerializableAttribute), inherit: true) != null)
                 {
